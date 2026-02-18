@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "453673117871",
+    "project_id": "chaltapay-app",
+    "storage_bucket": "chaltapay-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453673117871:android:41c6b7daa2c0792f7e8c5a",
+        "android_client_info": {
+          "package_name": "com.chaltapay.chaltapay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_UUc3cK94ONfXv6zlqtCn1q7J8mMH2Bk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
