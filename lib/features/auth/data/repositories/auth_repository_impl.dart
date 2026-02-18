@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -8,8 +9,10 @@ part 'auth_repository_impl.g.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final FirebaseFirestore _firestore;
 
-  AuthRepositoryImpl(this._firebaseAuth, this._googleSignIn);
+  AuthRepositoryImpl(
+      this._firebaseAuth, this._googleSignIn, this._firestore);
 
   @override
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
@@ -27,11 +30,30 @@ class AuthRepositoryImpl implements AuthRepository {
         idToken: googleAuth.idToken,
       );
 
-      await _firebaseAuth.signInWithCredential(credential);
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+      if (userCredential.user != null) {
+        await _syncUserToFirestore(userCredential.user!);
+      }
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Authentication failed');
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<void> _syncUserToFirestore(User user) async {
+    final userDoc = _firestore.collection('users').doc(user.uid);
+    final snapshot = await userDoc.get();
+
+    if (!snapshot.exists) {
+      await userDoc.set({
+        'uid': user.uid,
+        'email': user.email,
+        'displayName': user.displayName,
+        'photoURL': user.photoURL,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     }
   }
 
@@ -44,5 +66,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
 @Riverpod(keepAlive: true)
 AuthRepository authRepository(AuthRepositoryRef ref) {
-  return AuthRepositoryImpl(FirebaseAuth.instance, GoogleSignIn());
+  return AuthRepositoryImpl(FirebaseAuth.instance, GoogleSignIn(),
+      FirebaseFirestore.instance);
 }
