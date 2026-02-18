@@ -1,1 +1,104 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 .agent/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Gradle
+.gradle/
+**/android/gradle/wrapper/gradle-wrapper.properties
+
+# Android keys and keystores
+*.jks
+*.keystore
+*.key
+key.properties
+
+# iOS
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+*.xccheckout
+*.sh
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Podfile.lock
+**/ios/Pods/
+**/ios/.symlinks/
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Code coverage
+coverage/
+
+# Tools
+.fvm
+.fvm_flutter_sdk
+
+# Drift / SQLite
+*.sqlite
+*.db
+
+# Generated code (Uncomment if you want to ignore generated files)
+# *.g.dart
+# *.freezed.dart
+# *.config.dart
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Firebase config (if you have it)
+# google-services.json
+# GoogleService-Info.plist
+
+# Exceptions to above rules.
+!/android/app/src/main/AndroidManifest.xml
+!/ios/Runner/Info.plist
