@@ -6,13 +6,23 @@ import android.net.Uri
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import com.chaltapay.UssdAccessibilityService
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.chaltapay/ussd"
+    private val EVENT_CHANNEL = "com.chaltapay/ussd_events"
+    private var eventJob: Job? = null
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "dial") {
                 val code = call.argument<String>("code")
@@ -25,6 +35,25 @@ class MainActivity: FlutterActivity() {
                 result.notImplemented()
             }
         }
+
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL).setStreamHandler(
+            object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    eventJob = UssdAccessibilityService.ussdEvents
+                        .onEach { text ->
+                            runOnUiThread {
+                                events?.success(text)
+                            }
+                        }
+                        .launchIn(CoroutineScope(Dispatchers.Main))
+                }
+
+                override fun onCancel(arguments: Any?) {
+                    eventJob?.cancel()
+                    eventJob = null
+                }
+            }
+        )
     }
 
     private fun dialUssd(code: String, result: MethodChannel.Result) {
