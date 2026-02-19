@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
+import '../../features/home/presentation/home_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -8,9 +8,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('ChaltaPay Home')),
-        ),
+        builder: (context, state) => const HomeScreen(),
       ),
     ],
   );
