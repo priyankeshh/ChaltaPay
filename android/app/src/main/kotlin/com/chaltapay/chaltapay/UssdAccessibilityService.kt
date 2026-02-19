@@ -1,4 +1,4 @@
-package com.chaltapay
+package com.chaltapay.chaltapay
 
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
