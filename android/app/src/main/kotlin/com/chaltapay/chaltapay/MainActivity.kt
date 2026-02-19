@@ -3,6 +3,7 @@ package com.chaltapay.chaltapay
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -24,15 +25,21 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "dial") {
-                val code = call.argument<String>("code")
-                if (code != null) {
-                    dialUssd(code, result)
-                } else {
-                    result.error("INVALID_ARGUMENT", "USSD code is null", null)
+            when (call.method) {
+                "dial" -> {
+                    val code = call.argument<String>("code")
+                    if (code != null) {
+                        dialUssd(code, result)
+                    } else {
+                        result.error("INVALID_ARGUMENT", "USSD code is null", null)
+                    }
                 }
-            } else {
-                result.notImplemented()
+                "openAccessibilitySettings" -> {
+                    openAccessibilitySettings(result)
+                }
+                else -> {
+                    result.notImplemented()
+                }
             }
         }
 
@@ -70,6 +77,16 @@ class MainActivity: FlutterActivity() {
             result.success("Dialing initiated")
         } catch (e: Exception) {
             result.error("DIAL_ERROR", "Failed to dial USSD: ${e.message}", null)
+        }
+    }
+
+    private fun openAccessibilitySettings(result: MethodChannel.Result) {
+        try {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            startActivity(intent)
+            result.success(true)
+        } catch (e: Exception) {
+            result.error("SETTINGS_ERROR", "Failed to open accessibility settings: ${e.message}", null)
         }
     }
 }
