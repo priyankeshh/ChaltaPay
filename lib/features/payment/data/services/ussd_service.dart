@@ -22,6 +22,14 @@ class UssdService {
     }
   }
 
+  Future<void> openAccessibilitySettings() async {
+    try {
+      await _channel.invokeMethod('openAccessibilitySettings');
+    } on PlatformException catch (e) {
+      throw Exception('Failed to open accessibility settings: ${e.message}');
+    }
+  }
+
   Stream<String> get ussdMessages {
     return _eventChannel.receiveBroadcastStream().map((event) => event.toString());
   }

@@ -23,6 +23,13 @@ class HomeScreen extends ConsumerWidget {
               },
               child: const Text('Test *99# USSD'),
             ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                ussdService.openAccessibilitySettings();
+              },
+              child: const Text('Enable Automation Service'),
+            ),
             const SizedBox(height: 20),
             StreamBuilder<String>(
               stream: ussdService.ussdMessages,
