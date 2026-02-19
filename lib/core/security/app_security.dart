@@ -1,15 +1,29 @@
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:screen_protector/screen_protector.dart';
 
 class AppSecurity {
-  /// Enables FLAG_SECURE on Android to prevent screenshots and screen recording.
-  /// This is crucial for fintech apps to protect sensitive data.
+  /// Prevent screenshots & screen recording (Android + iOS)
   static Future<void> secureScreen() async {
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    if (!kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+         defaultTargetPlatform == TargetPlatform.iOS)) {
       try {
-        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+        await ScreenProtector.preventScreenshotOn();
       } catch (e) {
         debugPrint("Failed to secure screen: $e");
+      }
+    }
+  }
+
+  /// Optional — allow screenshots again
+  static Future<void> unsecureScreen() async {
+    if (!kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+         defaultTargetPlatform == TargetPlatform.iOS)) {
+      try {
+        await ScreenProtector.preventScreenshotOff();
+      } catch (e) {
+        debugPrint("Failed to unsecure screen: $e");
       }
     }
   }
