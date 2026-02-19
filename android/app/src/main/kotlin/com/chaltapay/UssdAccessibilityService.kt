@@ -17,38 +17,45 @@ class UssdAccessibilityService : AccessibilityService() {
         if (event == null) return
 
         val eventType = event.eventType
+        // We only care about window content changes or state changes
         if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
             eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
 
-            val className = event.className?.toString()
-            val packageName = event.packageName?.toString()
-
-            // Filter for typical USSD dialog packages/classes
-            if (packageName?.contains("com.android.phone") == true ||
-                className?.contains("AlertDialog") == true) {
-
-                val text = extractText(event.source)
-                if (!text.isNullOrBlank()) {
-                    _ussdEvents.tryEmit(text)
-                }
+            // OS-AGNOSTIC: No package name filtering.
+            // We crawl the entire node tree to find meaningful text.
+            val rootNode = event.source ?: return
+            
+            // Search for the longest text in the hierarchy, assuming USSD messages
+            // or bank menus are likely the most significant text content.
+            val foundText = findLongestText(rootNode)
+            
+            if (!foundText.isNullOrBlank()) {
+                _ussdEvents.tryEmit(foundText)
             }
         }
     }
 
-    private fun extractText(node: AccessibilityNodeInfo?): String {
+    // Recursively traverse the node hierarchy to find the longest text string.
+    // This heuristic helps distinguish content from button labels (like "OK", "Cancel").
+    private fun findLongestText(node: AccessibilityNodeInfo?): String {
         if (node == null) return ""
 
-        val sb = StringBuilder()
-        if (node.text != null) {
-            sb.append(node.text).append("\n")
+        var longest = ""
+        
+        // Check text of the current node
+        if (node.text != null && node.text.toString().isNotBlank()) {
+            longest = node.text.toString()
         }
 
+        // Recursively check children
         for (i in 0 until node.childCount) {
-            val child = node.getChild(i)
-            sb.append(extractText(child))
+            val childLongest = findLongestText(node.getChild(i))
+            if (childLongest.length > longest.length) {
+                longest = childLongest
+            }
         }
 
-        return sb.toString().trim()
+        return longest
     }
 
     override fun onInterrupt() {
