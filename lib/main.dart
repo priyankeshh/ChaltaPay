@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'app.dart';
 import 'firebase_options.dart';
+import 'core/security/app_security.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,8 +12,10 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    // Secure the screen immediately after initialization
+    await AppSecurity.secureScreen();
   } catch (e) {
-    debugPrint("Firebase initialization failed: $e");
+    debugPrint("Initialization failed: $e");
     // In a real app, we might want to show an error screen here
   }
 
